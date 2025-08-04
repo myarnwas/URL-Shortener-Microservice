@@ -33,6 +33,12 @@ let count = 1;
 
 app.post('/api/shorturl', (req, res) => {
   const { url } = req.body;
+
+  // التحقق الأول: لازم يبدأ بـ http:// أو https://
+  if (!/^https?:\/\/.+/.test(url)) {
+    return res.json({ error: 'invalid url' });
+  }
+
   const hostname = urlParser.parse(url).hostname;
 
   dns.lookup(hostname, async (err) => {
@@ -49,6 +55,9 @@ app.post('/api/shorturl', (req, res) => {
     res.json({ original_url: newUrl.original_url, short_url: newUrl.short_url });
   });
 });
+
+
+
 
 // API endpoint - Redirect
 app.get('/api/shorturl/:short', async (req, res) => {
